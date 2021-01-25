@@ -127,83 +127,67 @@ def game_hash
 end
 
 # Write code here
-def num_points_scored (name)
-  answer = nil
-
-  game_hash.each do |team, details_hash|
-    players_array = details_hash[:players]
-      players_array.each do |player_details_hash|
-        if player_details_hash[:name] == name
-          answer = player_details_hash[:points]
-        end
+def num_points_scored(p_research)
+  game_hash.count do |team, team_stats|
+    team_stats[:players].count do |pl|
+      if pl[:player_name] == p_research
+        return pl[:points]
       end
-  end
-  answer
-end
-
-
-def shoe_size(name)
-  answer = nil
-
-  game_hash.each do |team, details_hash|
-    players_array = details_hash[:players]
-      players_array.each do |player_details_hash|
-        if player_details_hash[:name] == name
-          answer = player_details_hash[:shoe]
-        end
-      end
-  end
-  answer
-end
-
-
-def team_colors (team_name)
-    colors = nil
-    game_hash.each do |team, team_details_hash|
-        if team_details_hash[:name] == team_name
-            colors = team_details_hash[:colors].flatten
-        end
     end
-    colors
+  end
 end
 
+def shoe_size(nm)
+  game_hash.count do |team, team_stats|
+    team_stats[:players].count do |pl|
+      if pl[:player_name] == nm
+        return pl[:shoe]
+      end
+    end
+  end
+end
+
+def team_colors(team_nm)
+  if team_nm.downcase == "charlotte hornets" 
+    return game_hash[:away][:colors]
+  else return game_hash[:home][:colors]
+  end
+end
 
 def team_names
-  game_hash.collect do |team, team_details_hash|
-    team_details_hash[:name] 
+  game_hash.map do |team, team_stats|
+    team_stats[:team_name]
   end
 end
 
-
-def player_numbers (team_name)
-  player_numbers_list = []
-  game_hash.each do |team, team_details_hash|
-    if team_details_hash[:name] == team_name
-      team_details_hash[:players].each do |player|
-        player.each do |key, value|
-          if key == :number 
-            player_numbers_list << value
+def player_numbers(team_nm)
+  array_of_jersey_numbers = []
+  game_hash.count do |team, team_stats|
+    if team_stats[:team_name] == team_nm 
+      team_stats.count do |key, value|
+        if key == :players
+          value.each do |pl|
+          array_of_jersey_numbers.push(pl[:number])
           end
         end
       end
     end
   end
-  player_numbers_list
+  return array_of_jersey_numbers
 end
 
-
-def player_stats(player_name)
-  player_stats = {}
-  game_hash.each do |team, team_details_hash|
-    team_details_hash[:players].each do |stats|
-
-      if stats[:name] == player_name
-        stats.delete(:name)
-        player_stats = stats
+def player_stats(player_nm)
+  game_hash.count do |team, team_stats|
+    team_stats.count do |key, value|
+      if key == :players
+        value.each do |pl|
+          if player_nm == pl[:player_name]
+            return pl
+          end
+        end
       end
     end
   end
-  player_stats
 end
 
 def big_shoe_rebounds
